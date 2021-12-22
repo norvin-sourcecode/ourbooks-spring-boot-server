@@ -12,3 +12,10 @@ target
 .classpath
 .project
 .settings
+/out/artifacts/ourbookTest_jar
+/.vscode
+/.idea
+/.mvn
+/.readmes
+/mvnw
+/mvnw.cmd
