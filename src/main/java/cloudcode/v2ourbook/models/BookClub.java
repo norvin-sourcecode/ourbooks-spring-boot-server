@@ -13,7 +13,7 @@ import java.util.Set;
 public class BookClub {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     Long id;
 
     String name;
@@ -22,11 +22,7 @@ public class BookClub {
     User bookclubOwner;
 
     @ManyToMany(cascade=CascadeType.PERSIST)
-//    @JoinTable(
-//            name = "BookClub_User",
-//            joinColumns = {@JoinColumn(name = "bookclubMembers_id")},
-//            inverseJoinColumns = {@JoinColumn(name = "bookclubMemberships_id")}
-//    )
+
     Set<User> bookclubMembers = new HashSet<>();
 
     @OneToMany

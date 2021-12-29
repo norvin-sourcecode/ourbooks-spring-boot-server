@@ -183,10 +183,7 @@ public class UserController {
     @GetMapping("/user/getUserByNameFiltered/{term}")
     public List<UserDto> getUsersByTerm(@PathVariable(value = "term") String term) {
         List<UserDto> list = new java.util.ArrayList<>();
-        for (User u :
-                userRepository.findAllByUsernameContains(term)) {
-            list.add(new UserDto(u));
-        }
+        userRepository.findAllByUsernameContains(term).stream().limit(9).forEach(u -> list.add(new UserDto(u)));
         return list;
     }
 

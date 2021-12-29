@@ -60,17 +60,20 @@ public class BookService {
         return visibilityFilter(books);
     }
 
-    public Book extractBookFromResponse(ResponseEntity<String> response, User user, String isbn) throws IOException {
+    public Book extractBookFromResponse(ResponseEntity<String> response, User user, Integer index) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(response.getBody());
-        String title = root.at("/items/0/volumeInfo/title").asText();
-        String author = root.at("/items/0/volumeInfo/authors/0").asText();
-        String erscheinungsDatum = root.at("/items/0/volumeInfo/publishedDate").asText();
-        String sprache = root.at("/items/0/volumeInfo/language").asText();
-        String pictureUrl = root.at("/items/0/volumeInfo/imageLinks/thumbnail").asText();
-        String description = root.at("/items/0/volumeInfo/description").asText();
-//        String  = root.at("/items/0/volumeInfo/description").asText();
-//        String auflage = root.at("/items/0/volumeInfo/title").asText();
+        String title = root.at("/items/" + index  + "/volumeInfo/title").asText();
+        String author = root.at("/items/" + index  + "/volumeInfo/authors/0").asText();
+        String erscheinungsDatum = root.at("/items/" + index  + "/volumeInfo/publishedDate").asText();
+        String sprache = root.at("/items/" + index  + "/volumeInfo/language").asText();
+        String pictureUrl = root.at("/items/" + index  + "/volumeInfo/imageLinks/thumbnail").asText();
+        String description = root.at("/items/" + index  + "/volumeInfo/description").asText();
+
+        String isbn0 = root.at("/items/" + index  + "/volumeInfo/industryIdentifiers/0").asText();
+        String isbn1 = root.at("/items/" + index  + "/volumeInfo/industryIdentifiers/1").asText();
+        String isbn = (isbn0.length() > isbn1.length()) ? isbn0 : isbn1;
+
         URL url = new URL("https://www.google.com.pk/images/srpr/logo4w.png");
         URLConnection conn = url.openConnection();
         InputStream in = conn.getInputStream();
@@ -80,9 +83,9 @@ public class BookService {
         Book book = new Book();
         book.setRatio(width/height);
         book.setUser(user);
+        book.setTitel(title);
         book.setIsbn(isbn);
         book.setPictureUrl(pictureUrl);
-        book.setTitel(title);
         book.setAuthorName(author);
         book.setErscheinungsDatum(erscheinungsDatum);
         book.setSprache(sprache);

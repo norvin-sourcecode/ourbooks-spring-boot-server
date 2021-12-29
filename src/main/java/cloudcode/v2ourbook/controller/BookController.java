@@ -325,36 +325,27 @@ public class BookController {
                 = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
         ResponseEntity<String> response
                 = restTemplate.getForEntity(fooResourceUrl + isbn, String.class);
-        Book book = bookService.extractBookFromResponse(response, userController.getCurrentUser(), isbn);
+        Book book = bookService.extractBookFromResponse(response, userController.getCurrentUser(), 0);
         return new BookDto(book);
     }
 
     @GetMapping("/books/searchOnlineTitle/{term}")
-    public BookDto searchOnlineByTitle(@PathVariable(name = "term") String term) throws JsonProcessingException {
+    public List<BookDto> searchOnlineByTitle(@PathVariable(name = "term") String term) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         String fooResourceUrl
                 = "https://www.googleapis.com/books/v1/volumes?q=intitle:";
         ResponseEntity<String> response
                 = restTemplate.getForEntity(fooResourceUrl + term, String.class);
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.getBody());
-        String title = root.at("/items/0/volumeInfo/title").asText();
-        String isbn = root.at("/items/0/volumeInfo/industryIdentifiers/0/identifier").asText();
-        String author = root.at("/items/0/volumeInfo/authors/0").asText();
-        String erscheinungsDatum = root.at("/items/0/volumeInfo/publishedDate").asText();
-        String sprache = root.at("/items/0/volumeInfo/language").asText();
-        String pictureUrl = root.at("/items/0/volumeInfo/imageLinks/thumbnail").asText();
-        String description = root.at("/items/0/volumeInfo/description").asText();
-//        String auflage = root.at("/items/0/volumeInfo/title").asText();
-        BookDto bookDto = new BookDto();
-        bookDto.setIsbn(isbn);
-        bookDto.setPictureUrl(pictureUrl);
-        bookDto.setTitel(title);
-        bookDto.setAuthorName(author);
-        bookDto.setErscheinungsDatum(erscheinungsDatum);
-        bookDto.setSprache(sprache);
-        System.out.println(bookDto);
-        return bookDto;
+        List<BookDto> result = new ArrayList<>();
+        JsonNode jsonNode = mapper.readTree(response.getBody());
+        if (jsonNode.has("items")){
+            int size = jsonNode.get("items").size();
+            for (int i = 0; i < size; i++){
+                result.add(new BookDto(bookService.extractBookFromResponse(response, userController.getCurrentUser(), i)));
+            }
+        }
+        return result;
     }
 
     // Delete a Note

@@ -53,7 +53,7 @@ public class ReadingListController {
     @PostMapping("/readingList/addBookByIsbn/{isbn}") // TODO bookmark
     public ResponseEntity<Long> addBookByISBN(@PathVariable(value = "isbn") String isbn) throws ExceptionBlueprint, IOException {
         ResponseEntity<String> response = bookService.lookUpByIsbn(isbn);
-        Book book = bookService.extractBookFromResponse(response, userController.getCurrentUser(), isbn);
+        Book book = bookService.extractBookFromResponse(response, userController.getCurrentUser(), 0);
         bookRepository.save(book);
         System.out.println(new BookDto(book));
         User currentUser = userController.getCurrentUser();
