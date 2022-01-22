@@ -63,8 +63,8 @@ public class BookController {
     }
 
     @PostMapping("/newNotification")
-    public void newNotification(@RequestBody List<String> pushTokens){
-        List<String> messageList = List.of("hey 1", "hi 2");
+    public void newNotification(@RequestBody List<String> pushTokens) throws IOException, InterruptedException {
+        List<String> messageList = List.of("test 1");
         notificationService.sendNotification(messageList, pushTokens);
     }
 
@@ -90,7 +90,7 @@ public class BookController {
     // Create a new Note
     //@Transactional
     @PostMapping("/books/createBook")
-    public ResponseEntity<Long> createBook(@Valid @RequestBody BookDto bookDto) throws FirebaseMessagingException {
+    public ResponseEntity<Long> createBook(@Valid @RequestBody BookDto bookDto) throws FirebaseMessagingException, IOException, InterruptedException {
         User currentUser = userController.getCurrentUser();
         Book book = new Book();
         book.setTitel(bookDto.getTitel());
@@ -104,19 +104,25 @@ public class BookController {
         book.setUserLocation(currentUser);
         book.setPictureUrl(bookDto.getPictureUrl());
         book.setDescription(bookDto.getDescription());
+        book.setRatio(bookDto.getRatio());
         currentUser.addBook(book);
         bookRepository.save(book);
         List<String> registrationTokens = currentUser.getFriends().stream().map(User::getToken).collect(Collectors.toList()); // TODO change token
+
+        List<String> messageList = new ArrayList<>();
+        registrationTokens.forEach(t -> messageList.add("New Book test 1"));
+        notificationService.sendNotification(messageList, registrationTokens);
+
         // See documentation on defining a message payload.
-        MulticastMessage message = MulticastMessage.builder()
-                .setNotification(Notification.builder()
-                        .setTitle(currentUser.getUsername() + " hat ein neues Buch hochgeladen")
-                        .setBody("Jetzt verfügbar: " + book.getTitel())
-                        .build())
-                .addAllTokens(registrationTokens)
-                .build();
-        BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
-        System.out.println(response.getSuccessCount() + " messages were sent successfully");
+//        MulticastMessage message = MulticastMessage.builder()
+//                .setNotification(Notification.builder()
+//                        .setTitle(currentUser.getUsername() + " hat ein neues Buch hochgeladen")
+//                        .setBody("Jetzt verfügbar: " + book.getTitel())
+//                        .build())
+//                .addAllTokens(registrationTokens)
+//                .build();
+//        BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
+//        System.out.println(response.getSuccessCount() + " messages were sent successfully");
         return new ResponseEntity<>(book.getId(), HttpStatus.OK);
     }
 
@@ -335,7 +341,7 @@ public class BookController {
         String fooResourceUrl
                 = "https://www.googleapis.com/books/v1/volumes?q=intitle:";
         ResponseEntity<String> response
-                = restTemplate.getForEntity(fooResourceUrl + term, String.class);
+                = restTemplate.getForEntity(fooResourceUrl + term + " ", String.class);
         ObjectMapper mapper = new ObjectMapper();
         List<BookDto> result = new ArrayList<>();
         JsonNode jsonNode = mapper.readTree(response.getBody());

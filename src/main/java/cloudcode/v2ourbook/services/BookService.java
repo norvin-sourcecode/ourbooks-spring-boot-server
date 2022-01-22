@@ -68,20 +68,33 @@ public class BookService {
         String erscheinungsDatum = root.at("/items/" + index  + "/volumeInfo/publishedDate").asText();
         String sprache = root.at("/items/" + index  + "/volumeInfo/language").asText();
         String pictureUrl = root.at("/items/" + index  + "/volumeInfo/imageLinks/thumbnail").asText();
+        String smallPictureUrl = root.at("/items/" + index  + "/volumeInfo/imageLinks/thumbnail").asText();
         String description = root.at("/items/" + index  + "/volumeInfo/description").asText();
-
-        String isbn0 = root.at("/items/" + index  + "/volumeInfo/industryIdentifiers/0").asText();
-        String isbn1 = root.at("/items/" + index  + "/volumeInfo/industryIdentifiers/1").asText();
+        //
+        String isbn0 = root.at("/items/" + index  + "/volumeInfo/industryIdentifiers/0/identifier").asText();
+        String isbn1 = root.at("/items/" + index  + "/volumeInfo/industryIdentifiers/1/identifier").asText();
         String isbn = (isbn0.length() > isbn1.length()) ? isbn0 : isbn1;
 
-        URL url = new URL("https://www.google.com.pk/images/srpr/logo4w.png");
-        URLConnection conn = url.openConnection();
-        InputStream in = conn.getInputStream();
-        BufferedImage image = ImageIO.read(in);
-        double width = image.getWidth();
-        double height = image.getHeight();
         Book book = new Book();
-        book.setRatio(width/height);
+
+        if (pictureUrl.equals("") && smallPictureUrl.equals("")){
+            book.setRatio(0.0);
+        } else {
+            String urlString;
+            if (pictureUrl.equals("")){
+                urlString = smallPictureUrl;
+            } else {
+                urlString = pictureUrl;
+            }
+            URL url = new URL(urlString);
+            URLConnection conn = url.openConnection();
+            InputStream in = conn.getInputStream();
+            BufferedImage image = ImageIO.read(in);
+            double width = image.getWidth();
+            double height = image.getHeight();
+            book.setRatio(height/width);
+        }
+
         book.setUser(user);
         book.setTitel(title);
         book.setIsbn(isbn);

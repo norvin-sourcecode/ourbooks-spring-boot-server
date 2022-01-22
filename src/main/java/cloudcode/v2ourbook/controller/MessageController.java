@@ -26,7 +26,7 @@ public class MessageController {
     }
 
     @PostMapping("/messages/create")
-    public String createMessage(String text, Long chatId) throws InterruptedException, ExecutionException, ExceptionBlueprint {
+    public String createMessage(String text, Long chatId) throws InterruptedException, ExecutionException, ExceptionBlueprint, IOException {
 //        GetBookProcess getBookProcess = getBookProcessRepository.findById(chatId).
 //                orElseThrow(() -> new ExceptionBlueprint("Process not found", "no", 1));
 //        reminderService.scheduleDueReminderJob(getBookProcess);

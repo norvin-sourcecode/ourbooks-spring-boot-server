@@ -11,6 +11,7 @@ import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class MessageService {
         this.getBookProcessRepository = getBookProcessRepository;
     }
 
-    public String createMessage(String text, Long processId) throws ExecutionException, InterruptedException, ExceptionBlueprint {
+    public String createMessage(String text, Long processId) throws ExecutionException, InterruptedException, ExceptionBlueprint, IOException {
         User currentUser = userService.getCurrentUser();
         GetBookProcess process = getBookProcessRepository.findById(processId).
                 orElseThrow(() -> new ExceptionBlueprint("getBook Process not found not found","no",1));

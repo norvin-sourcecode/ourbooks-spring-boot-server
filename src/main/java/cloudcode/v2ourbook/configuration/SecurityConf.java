@@ -77,6 +77,7 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/user/confirm-account/*").anonymous()
                 .mvcMatchers("/user/confirm-account/**").anonymous()
                 .mvcMatchers("/user/confirm-account/").anonymous()
+                .mvcMatchers("/user/confirm-account").anonymous()
 //                .mvcMatchers("/**").anonymous()
                 .anyRequest().authenticated()
 //                .csrf().disable().httpBasic()
