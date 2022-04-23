@@ -19,3 +19,8 @@ target
 /.readmes
 /mvnw
 /mvnw.cmd
+/.idea/
+
+/out/
+/.mvn/
+/.vscode/

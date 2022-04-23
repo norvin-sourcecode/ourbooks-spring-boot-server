@@ -63,7 +63,7 @@ public class BookController {
     }
 
     @PostMapping("/newNotification")
-    public void newNotification(@RequestBody List<String> pushTokens) throws IOException, InterruptedException {
+    public void newNotification(@RequestBody ArrayList<String> pushTokens) throws IOException, InterruptedException {
         List<String> messageList = List.of("test 1");
         notificationService.sendNotification(messageList, pushTokens);
     }
